@@ -30,7 +30,7 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/signup", service.Signup(db)).Methods("POST")
-	router.HandleFunc("/login", service.Login).Methods("POST")
+	router.HandleFunc("/login", service.Login(db)).Methods("POST")
 	router.HandleFunc("/protected", TokenVerifyMiddleWare(protectedEndpoint)).Methods("GET")
 
 	log.Println("Listening on port 8000...")
