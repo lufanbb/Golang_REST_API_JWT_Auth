@@ -13,6 +13,9 @@ import (
 	"github.com/lufanbb/Golang_REST_API_JWT_Auth/internal/model"
 )
 
+// SECRET is signiture for jwt token
+const SECRET = "secret for tokenizing jwt"
+
 // Login will login user with the email and password user provide
 func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
@@ -25,13 +28,13 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		if user.Email == "" {
 			error.Message = "Email is missing"
-			respondWithError(w, http.StatusBadRequest, error)
+			RespondWithError(w, http.StatusBadRequest, error)
 			return
 		}
 
 		if user.Password == "" {
 			error.Message = "Password is missing"
-			respondWithError(w, http.StatusBadRequest, error)
+			RespondWithError(w, http.StatusBadRequest, error)
 			return
 		}
 
@@ -43,7 +46,7 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				error.Message = "The user does not exist"
-				respondWithError(w, http.StatusBadRequest, error)
+				RespondWithError(w, http.StatusBadRequest, error)
 				return
 			} else {
 				log.Fatal(err)
@@ -55,7 +58,7 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			error.Message = "The password does not match"
-			respondWithError(w, http.StatusUnauthorized, error)
+			RespondWithError(w, http.StatusUnauthorized, error)
 			return
 		}
 
@@ -63,13 +66,13 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			error.Message = "Error when generating jwt token"
-			respondWithError(w, http.StatusInternalServerError, error)
+			RespondWithError(w, http.StatusInternalServerError, error)
 			return
 		}
 
 		jwt.Token = token
 
-		respondWithJSON(w, jwt)
+		RespondWithJSON(w, jwt)
 
 		fmt.Println(user)
 	}
@@ -77,14 +80,13 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 // GenerateToken will generate jwt token based on user login email
 func GenerateToken(user model.User) (string, error) {
-	secret := "secret for tokenizing jwt"
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": user.Email,
 		"iss":   "course",
 	})
 
-	tokenString, err := token.SignedString([]byte(secret))
+	tokenString, err := token.SignedString([]byte(SECRET))
 
 	if err != nil {
 		log.Fatal(err)

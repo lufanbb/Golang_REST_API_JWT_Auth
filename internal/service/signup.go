@@ -10,15 +10,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func respondWithError(w http.ResponseWriter, statusCode int, error model.Error) {
-	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(error)
-}
-
-func respondWithJSON(w http.ResponseWriter, data interface{}) {
-	json.NewEncoder(w).Encode(data)
-}
-
 // Signup lets user sign up with email and password
 func Signup(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -29,13 +20,13 @@ func Signup(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		if user.Email == "" {
 			error.Message = "Email is missing"
-			respondWithError(w, http.StatusBadRequest, error)
+			RespondWithError(w, http.StatusBadRequest, error)
 			return
 		}
 
 		if user.Password == "" {
 			error.Message = "Password is missing"
-			respondWithError(w, http.StatusBadRequest, error)
+			RespondWithError(w, http.StatusBadRequest, error)
 			return
 		}
 
@@ -53,12 +44,12 @@ func Signup(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			error.Message = "There was an issue inserting the user to database"
-			respondWithError(w, http.StatusInternalServerError, error)
+			RespondWithError(w, http.StatusInternalServerError, error)
 			return
 		}
 
 		user.Password = ""
 		w.Header().Set("Content-Type", "application/json")
-		respondWithJSON(w, user)
+		RespondWithJSON(w, user)
 	}
 }
