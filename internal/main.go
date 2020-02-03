@@ -44,7 +44,7 @@ func main() {
 
 // TokenVerifyMiddleWare verify the authorization token before it forwards the request to the route
 func TokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var err model.Error
 		authHeader := r.Header.Get("Authorization")
 		bearerToken := strings.Split(authHeader, " ")
@@ -78,5 +78,5 @@ func TokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
 			service.RespondWithError(w, http.StatusUnauthorized, err)
 		}
 
-	})
+	}
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -73,8 +72,6 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		jwt.Token = token
 
 		RespondWithJSON(w, jwt)
-
-		fmt.Println(user)
 	}
 }
 
