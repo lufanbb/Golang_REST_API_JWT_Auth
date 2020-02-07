@@ -1,36 +1,28 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
-	"github.com/lib/pq"
 
+	"github.com/lufanbb/Golang_REST_API_JWT_Auth/internal/driver"
 	"github.com/lufanbb/Golang_REST_API_JWT_Auth/internal/model"
 	"github.com/lufanbb/Golang_REST_API_JWT_Auth/internal/service"
+	"github.com/subosito/gotenv"
 )
 
-var db *sql.DB
-
-const postgresDBURL = "postgres://xcpcmiip:6CJG7e6m1UinRwnSgBwkK-bUbDW6HNX8@rajje.db.elephantsql.com:5432/xcpcmiip"
+func init() {
+	gotenv.Load()
+}
 
 func main() {
-	pgURL, err := pq.ParseURL(postgresDBURL)
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db, err = sql.Open("postgres", pgURL)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	db := driver.ConnectDB()
 
 	router := mux.NewRouter()
 
@@ -56,7 +48,7 @@ func TokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
 					return nil, errors.New("The signin Method cannot be verified")
 				}
 
-				return []byte(service.SECRET), nil
+				return []byte(os.Getenv("SECRET")), nil
 			})
 
 			if error != nil {

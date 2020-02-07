@@ -11,7 +11,7 @@ import (
 )
 
 // Signup lets user sign up with email and password
-func Signup(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Signup(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user model.User
 		var error model.Error

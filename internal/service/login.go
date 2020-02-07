@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -12,11 +13,8 @@ import (
 	"github.com/lufanbb/Golang_REST_API_JWT_Auth/internal/model"
 )
 
-// SECRET is signiture for jwt token
-const SECRET = "secret for tokenizing jwt"
-
 // Login will login user with the email and password user provide
-func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Login(db *sql.DB) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user model.User
@@ -83,7 +81,7 @@ func GenerateToken(user model.User) (string, error) {
 		"iss":   "course",
 	})
 
-	tokenString, err := token.SignedString([]byte(SECRET))
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
 		log.Fatal(err)
